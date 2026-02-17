@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Logging in...</title>
+</head>
+
+<body>
+    <p>Logging you in...</p>
+
+    <script>
+        const hash = new URLSearchParams(window.location.hash.substring(1));
+
+        const idToken = hash.get("id_token");
+        const accessToken = hash.get("access_token");
+
+        if (!idToken) {
+            alert("Login failed");
+            window.location.href = "/login.html";
+        }
+        else {
+            localStorage.setItem("id_token", idToken);
+            localStorage.setItem("access_token", accessToken);
+            window.location.href = "/dashboard.html";
+        }
+    </script>
+</body>
+
+</html>
