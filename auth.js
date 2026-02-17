@@ -18,11 +18,11 @@ function logout() {
 }
 
 function checkAuth() {
-    const user = localStorage.getItem(AUTH_KEY);
-    if (!user) {
+    const token = localStorage.getItem("id_token");
+    if (!token) {
         window.location.href = 'login.html';
     }
-    return JSON.parse(user);
+    return true;
 }
 
 function handleLogin(event) {
