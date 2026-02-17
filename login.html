@@ -70,13 +70,13 @@
     <script>
         const cognitoDomain = "https://us-east-1senj5cvnr.auth.us-east-1.amazoncognito.com";
         const clientId = "1u4dbf3uu4s4fvnb4g7lo9o59";
-        const redirectUri = "https://www.agastyagpt.com/dashboard.html";
+        const redirectUri = "https://www.agastyagpt.com/callback.html";
 
         document.getElementById("googleloginBtn").href =
             `${cognitoDomain}/login/continue` +
             `?client_id=${clientId}` +
             `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-            `&response_type=code` +
+            `&response_type=token` +
             `&scope=email+openid+phone`;
     </script>
 </body>

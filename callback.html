@@ -13,17 +13,17 @@
 
         const idToken = hash.get("id_token");
         const accessToken = hash.get("access_token");
-        console.log(idToken);
-        console.log(accessToken);
+        // console.log(idToken);
+        // console.log(accessToken);
         if (!idToken) {
             alert("Login failed");
             console.log("Login failed");
-            //window.location.href = "/login.html";
+            window.location.href = "/login.html";
         }
         else {
             localStorage.setItem("id_token", idToken);
             localStorage.setItem("access_token", accessToken);
-            //window.location.href = "/dashboard.html";
+            window.location.href = "/dashboard.html";
         }
     </script>
 </body>
