@@ -13,7 +13,8 @@ function login(email) {
 }
 
 function logout() {
-    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem("id_token");
+    localStorage.removeItem("access_token");
     window.location.href = 'index.html';
 }
 
