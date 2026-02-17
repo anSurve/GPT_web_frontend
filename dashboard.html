@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AgastyaGPT</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = checkAuth();
+            if (user) {
+                const nameSpan = document.getElementById('user-name');
+                if (nameSpan) nameSpan.textContent = user.name || user.email;
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">AgastyaGPT</div>
+        <button onclick="logout()" class="btn btn-outline" style="cursor: pointer;">Logout</button>
+    </header>
+
+    <section class="hero">
+        <h1>Welcome, <span id="user-name">User</span>!</h1>
+        <p>Your dashboard is ready. Explore your AI tools.</p>
+
+        <div class="features" style="margin-top: 40px;">
+            <div class="card">
+                <h3>My Projects</h3>
+                <p>Access your saved workflows and data analysis projects.</p>
+            </div>
+            <div class="card">
+                <h3>Settings</h3>
+                <p>Manage your profile and preferences.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        © 2026 AgastyaGPT.com — All rights reserved
+    </footer>
+
+</body>
+
+</html>

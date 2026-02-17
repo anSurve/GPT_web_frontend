@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — AgastyaGPT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" style="text-decoration: none;">
+            <div class="logo">AgastyaGPT</div>
+        </a>
+    </header>
+
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Welcome Back</h2>
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn login-btn">Sign In</button>
+            </form>
+
+            <div class="divider">
+                <span>Or continue with</span>
+            </div>
+
+            <button type="button" class="btn google-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M23.52 12.29C23.52 11.43 23.47 10.51 23.38 9.60H12V14.51H18.46C18.18 15.99 17.34 17.25 16.08 18.10V21.09H19.98C22.25 18.99 23.52 15.93 23.52 12.29Z"
+                        fill="#4285F4" />
+                    <path
+                        d="M12 24C15.24 24 17.96 22.92 19.98 21.09L16.08 18.10C15.00 18.82 13.62 19.26 12 19.26C8.87 19.26 6.22 17.15 5.26 14.29H1.22V17.42C3.31 21.57 7.61 24 12 24Z"
+                        fill="#34A853" />
+                    <path
+                        d="M5.26 14.29C5.01 13.52 4.87 12.72 4.87 11.99C4.87 11.26 5.01 10.45 5.26 9.68V6.55H1.22C0.44 8.13 0 9.99 0 11.99C0 14.00 0.44 15.86 1.22 17.42L5.26 14.29Z"
+                        fill="#FBBC05" />
+                    <path
+                        d="M12 4.74C13.76 4.74 15.35 5.34 16.60 6.55L20.07 3.08C17.96 1.12 15.24 0 12 0C7.61 0 3.31 2.43 1.22 6.55L5.26 9.68C6.22 6.82 8.87 4.74 12 4.74Z"
+                        fill="#EA4335" />
+                </svg>
+                Sign in with Google
+            </button>
+
+            <div class="secondary-links">
+                <a href="#">Forgot Password?</a>
+                <a href="#">Create an Account</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2026 AgastyaGPT.com — All rights reserved
+    </footer>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>
