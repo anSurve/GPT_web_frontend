@@ -28,7 +28,6 @@ jobs:
         run: |
           aws s3 sync . s3://${{ secrets.S3_BUCKET }} --delete --exact-timestamps \
             --cache-control "no-cache, no-store, must-revalidate"
-            - name: Invalidate CloudFront
             
       # Step 4: Invalidate CloudFront cache (optional)
       - name: Invalidate CloudFront
