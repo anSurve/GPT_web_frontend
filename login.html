@@ -57,7 +57,7 @@
 
             <div class="secondary-links">
                 <a href="#">Forgot Password?</a>
-                <a href="#">Create an Account</a>
+                <a id="signupBtn">Create an Account</a>
             </div>
         </div>
     </div>
@@ -73,11 +73,18 @@
         const redirectUri = "https://www.agastyagpt.com/callback.html";
 
         document.getElementById("googleloginBtn").href =
-            `${cognitoDomain}/login/continue` +
+            `${cognitoDomain}/login` +
             `?client_id=${clientId}` +
             `&redirect_uri=${encodeURIComponent(redirectUri)}` +
             `&response_type=token` +
             `&scope=email+openid+phone`;
+
+        document.getElementById("signupBtn").href =
+            `https://us-east-1senj5cvnr.auth.us-east-1.amazoncognito.com/signup/` +
+            `?client_id=${clientId}` +
+            `&response_type=token` +
+            `&scope=openid+email+profile` +
+            `&redirect_uri=${encodeURIComponent(redirectUri)}`
     </script>
 </body>
 

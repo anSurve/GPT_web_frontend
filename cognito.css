@@ -1,0 +1,13 @@
+.background-customizable {
+	background-color: #0f172a !important;
+}
+
+.banner-customizable {
+    background-color: #020617 !important;
+}
+
+.submitButton-customizable {
+	background-color: #22c55e;
+	border-radius: 10px;
+	font-weight: 600;
+}
