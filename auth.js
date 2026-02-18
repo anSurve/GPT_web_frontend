@@ -9,19 +9,19 @@ function login(email) {
         loginTime: new Date().toISOString()
     };
     localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-    window.location.href = 'dashboard.html';
+    window.location.href = '/dashboard.html';
 }
 
 function logout() {
     localStorage.removeItem("id_token");
     localStorage.removeItem("access_token");
-    window.location.href = 'index.html';
+    window.location.href = '/';
 }
 
 function checkAuth() {
     const token = localStorage.getItem("id_token");
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = '/';
     }
     return true;
 }
