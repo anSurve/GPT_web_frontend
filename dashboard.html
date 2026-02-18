@@ -12,7 +12,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const user = checkAuth();
             const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
-
             const jwtToken = localStorage.getItem("id_token");
 
             fetch(API_URL, {
