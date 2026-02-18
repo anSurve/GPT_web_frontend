@@ -11,7 +11,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const user = checkAuth();
+            const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
+
+            const jwtToken = localStorage.getItem("id_token");
+
+            fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${jwtToken}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("HTTP " + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    // Fetch email from response
+                    const email = data.email;
+                    document.getElementById("email").innerText = email;
+                })
+                .catch(err => {
+                    console.error("API error:", err);
+                });
         });
+
     </script>
 </head>
 
@@ -27,7 +51,9 @@
     <section class="hero">
         <h1>Welcome, <span id="user-name">User</span>!</h1>
         <p>Your dashboard is ready. Explore your AI tools.</p>
-
+        <div>
+            Logged in as: <span id="email">Loading...</span>
+        </div>
         <div class="features" style="margin-top: 40px;">
             <div class="card">
                 <h3>My Projects</h3>
