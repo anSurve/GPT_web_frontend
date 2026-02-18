@@ -16,12 +16,21 @@ header {
     background: #020617;
     border-bottom: 1px solid #1f2937;
     box-sizing: border-box;
+    /* position: absolute; */
+    /* Reverted */
+    /* width: 100%; */
+    /* top: 0; */
+    /* z-index: 10; */
 }
 
 .logo {
-    font-weight: 800;
-    font-size: 20px;
-    color: #38bdf8;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
 }
 
 .hero {
