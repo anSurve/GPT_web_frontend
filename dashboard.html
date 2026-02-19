@@ -39,27 +39,9 @@
 </head>
 
 <body>
-
-    <header>
-        <div class="logo-container">
-            <div class="hamburger">
-                <span class="line"></span>
-                <span class="line"></span>
-                <span class="line"></span>
-            </div>
-            <a href="dashboard.html" class="logo">
-                <img src="images/logo.png" alt="AgastyaGPT">
-            </a>
-        </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="settings.html">Settings</a></li>
-            </ul>
-        </nav>
-        <button onclick="logout()" class="btn btn-outline" style="cursor: pointer;">Logout</button>
-    </header>
-    <script src="scripts/nav.js"></script>
+    <div data-include="/partials/loggedInNavbar.html"></div>
+    <script src="scripts/include.js?v=2"></script>
+    <script src="scripts/nav.js?v=2"></script>
 
     <section class="hero">
         <h1>Welcome, <span id="user-name">User</span>!</h1>
@@ -79,9 +61,7 @@
         </div>
     </section>
 
-    <footer>
-        © 2026 AgastyaGPT.com — All rights reserved
-    </footer>
+    <div data-include="/partials/footer.html"></div>
 </body>
 
 </html>

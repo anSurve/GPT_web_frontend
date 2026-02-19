@@ -14,12 +14,9 @@
 
 <body>
 
-  <header>
-    <a href="index.html" class="logo">
-      <img src="images/logo.png" alt="AgastyaGPT">
-    </a>
-    <a id="signuploginBtn" class="btn">Login / Signup</a>
-  </header>
+  <div data-include="/partials/navbar.html"></div>
+  <script src="scripts/include.js?v=2"></script>
+  <script src="scripts/nav.js?v=2"></script>
 
   <section class="hero">
     <h1>Your AI Assistant for Everyday Intelligence</h1>
@@ -65,14 +62,23 @@
   <script>
     const cognitoDomain = "https://us-east-1senj5cvnr.auth.us-east-1.amazoncognito.com";
     const clientId = "1u4dbf3uu4s4fvnb4g7lo9o59";
-    const redirectUri = "https://www.agastyagpt.com/callback.html";
+    // const redirectUri = "https://www.agastyagpt.com/callback.html";
+    const redirectUri =
+      window.location.hostname === "localhost"
+        ? "http://localhost:5500/callback.html"
+        : "https://www.agastyagpt.com/callback.html";
 
-    document.getElementById("signuploginBtn").href =
-      `${cognitoDomain}/login` +
-      `?client_id=${clientId}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&response_type=token` +
-      `&scope=email+openid+phone`;
+    document.addEventListener('htmlIncluded', () => {
+      const loginBtn = document.getElementById("signuploginBtn");
+      if (loginBtn) {
+        loginBtn.href =
+          `${cognitoDomain}/login` +
+          `?client_id=${clientId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=email+openid+phone`;
+      }
+    });
   </script>
 </body>
 
