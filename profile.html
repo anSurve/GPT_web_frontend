@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.ico" />
+    <title>Profile - AgastyaGPT</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = checkAuth();
+            const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
+            const jwtToken = localStorage.getItem("id_token");
+
+            fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${jwtToken}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("HTTP " + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    // Fetch user details from response
+                    const email = data.email || 'N/A';
+                    const userId = data.userId || 'N/A'; // Assuming userId might be returned
+
+                    document.getElementById("profile-email").innerText = email;
+                    // document.getElementById("profile-name").innerText = "User"; // Placeholder or fetch if available
+                })
+                .catch(err => {
+                    console.error("API error:", err);
+                    document.getElementById("profile-email").innerText = "Error loading data";
+                });
+        });
+    </script>
+</head>
+
+<body>
+    <div data-include="/partials/loggedInNavbar.html"></div>
+    <script src="scripts/include.js?v=2"></script>
+    <script src="scripts/nav.js?v=2"></script>
+
+    <section class="hero" style="padding-top: 120px;"> <!-- Extra padding for fixed header -->
+        <h1>My Profile</h1>
+        <p>Manage your account details and settings.</p>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="images/logo.png" alt="User Avatar"
+                        style="width: 80px; height: 80px; border-radius: 50%; background: #1e293b; padding: 10px;">
+                </div>
+                <h2>User</h2>
+                <p>Member since 2026</p>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-item">
+                    <label>Email Address</label>
+                    <span id="profile-email">Loading...</span>
+                </div>
+                <!-- Add more fields as API provides them -->
+                <div class="detail-item">
+                    <label>Account Status</label>
+                    <span style="color: #4ade80;">Active</span>
+                </div>
+            </div>
+
+            <div class="profile-actions" style="margin-top: 30px;">
+                <button class="btn">Edit Profile</button>
+                <button class="btn btn-outline" style="margin-left: 10px;">Change Password</button>
+            </div>
+        </div>
+    </section>
+
+    <div data-include="/partials/footer.html"></div>
+</body>
+
+</html>
