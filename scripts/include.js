@@ -3,7 +3,8 @@ async function includeHTML() {
 
     for (const el of elements) {
         const file = el.getAttribute("data-include");
-        const res = await fetch(file);
+        // Append a timestamp so the browser never serves a cached partial
+        const res = await fetch(file + "?v=" + Date.now());
         el.innerHTML = await res.text();
     }
     document.dispatchEvent(new Event('htmlIncluded'));

@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="images/favicon.ico" />
     <title>Profile - AgastyaGPT</title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/profile.css">
     <script src="scripts/auth.js"></script>
     <script>
         // ── Config ──────────────────────────────────────────────────────────
@@ -35,7 +36,13 @@
                     }
                 });
 
-                if (!res.ok) throw new Error("HTTP " + res.status);
+                // Non-2xx (401, 403, 500…) → redirect to re-authenticate
+                if (!res.ok) {
+                    console.error("Profile API error: HTTP", res.status);
+                    window.location.href = "callback.html";
+                    return;
+                }
+
                 const data = await res.json();
 
                 // Populate text fields
@@ -52,9 +59,9 @@
                 const avatarUrl = data.profile_pic_url || DEFAULT_AVATAR;
                 setAvatar(avatarUrl);
             } catch (err) {
+                // Network error / no response at all → redirect
                 console.error("Profile API error:", err);
-                document.getElementById("profile-email").innerText = "Error loading data";
-                setAvatar(DEFAULT_AVATAR);
+                window.location.href = "callback.html";
             }
         });
 
@@ -281,12 +288,34 @@
             el.className = 'upload-status ' + type;
             setTimeout(() => el.innerText = '', 3500);
         }
+
+        // ── 2FA Toggle ───────────────────────────────────────────────────────
+        function handle2FAToggle(checkbox) {
+            const label = document.getElementById('tfa-label');
+            if (checkbox.checked) {
+                label.innerText = 'Enabled';
+                label.style.color = '#4ade80';
+            } else {
+                label.innerText = 'Disabled';
+                label.style.color = '#94a3b8';
+            }
+            localStorage.setItem('tfa_enabled', checkbox.checked);
+        }
+
+        // Restore 2FA toggle state from localStorage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const tfa = document.getElementById('tfa-toggle');
+            if (!tfa) return;
+            const saved = localStorage.getItem('tfa_enabled') === 'true';
+            tfa.checked = saved;
+            handle2FAToggle(tfa);
+        }, { once: false });
     </script>
 </head>
 
 <body>
     <div data-include="/partials/loggedInNavbar.html"></div>
-    <script src="scripts/include.js?v=2"></script>
+    <script src="scripts/include.js?v=3"></script>
     <script src="scripts/nav.js?v=2"></script>
 
     <!-- Hidden file input -->
@@ -309,11 +338,11 @@
                     <li class="active" onclick="showSection('personal-details', this)">
                         <span class="sidebar-icon">👤</span> Personal Details
                     </li>
-                    <li onclick="showSection('account-settings', this)">
-                        <span class="sidebar-icon">⚙️</span> Account Settings
-                    </li>
                     <li onclick="showSection('interests', this)">
                         <span class="sidebar-icon">🌟</span> Interests
+                    </li>
+                    <li onclick="showSection('account-settings', this)">
+                        <span class="sidebar-icon">⚙️</span> Account Settings
                     </li>
                 </ul>
             </aside>
@@ -376,26 +405,6 @@
                     </div>
                 </div>
 
-                <!-- Account Settings -->
-                <div id="account-settings" class="content-panel">
-                    <h2>Account Settings</h2>
-                    <p class="panel-subtitle">Manage your security and login preferences.</p>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <label>Password</label>
-                            <span>••••••••••</span>
-                        </div>
-                        <div class="detail-item">
-                            <label>Two-Factor Authentication</label>
-                            <span>Not enabled</span>
-                        </div>
-                    </div>
-                    <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn">Change Password</button>
-                        <button class="btn btn-danger">Delete Account</button>
-                    </div>
-                </div>
-
                 <!-- Interests -->
                 <div id="interests" class="content-panel">
                     <h2>Interests</h2>
@@ -410,6 +419,27 @@
                     </div>
                     <div style="margin-top: 32px;">
                         <button class="btn">Save Interests</button>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div id="account-settings" class="content-panel">
+                    <h2>Account Settings</h2>
+                    <p class="panel-subtitle">Manage your security and login preferences.</p>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Two-Factor Authentication</label>
+                            <div class="toggle-row">
+                                <label class="toggle-switch" title="Enable or disable 2FA">
+                                    <input type="checkbox" id="tfa-toggle" onchange="handle2FAToggle(this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span id="tfa-label" class="tfa-label">Disabled</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-danger">Delete Account</button>
                     </div>
                 </div>
 
