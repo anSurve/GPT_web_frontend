@@ -390,7 +390,7 @@
 /* ─── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .profile-page {
-        padding: 90px 16px 40px;
+        padding: 20px 16px 40px;
     }
 
     .profile-layout {
