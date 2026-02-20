@@ -38,7 +38,7 @@
     position: relative;
     display: inline-block;
     cursor: pointer;
-    border-radius: 50%;
+    /* border-radius: 50%; */
     overflow: hidden;
     flex-shrink: 0;
     /* never stretch in a flex row */

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.ico" />
+    <title>Setup Your Account - AgastyaGPT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020b18;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(14, 165, 233, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(99, 102, 241, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Wizard card ── */
+        .wizard-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(15, 30, 55, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            width: 100%;
+            max-width: 560px;
+            padding: 48px 44px;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ── Progress bar ── */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 40px;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #1e3a5f;
+            z-index: 0;
+            transition: background 0.4s;
+        }
+
+        .progress-step.completed:not(:last-child)::after {
+            background: #0ea5e9;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #1e3a5f;
+            background: #020b18;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .step-dot {
+            border-color: #0ea5e9;
+            background: #0ea5e9;
+            color: #fff;
+            box-shadow: 0 0 16px rgba(14, 165, 233, 0.4);
+        }
+
+        .progress-step.completed .step-dot {
+            border-color: #0ea5e9;
+            background: #0ea5e9;
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 10px;
+            color: #475569;
+            margin-top: 6px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .progress-step.active .step-label,
+        .progress-step.completed .step-label {
+            color: #38bdf8;
+        }
+
+        /* ── Step panels ── */
+        .step-panel {
+            display: none;
+            animation: fadeSlide 0.35s ease;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ── Typography ── */
+        .step-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #f0f9ff;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .step-title span {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .step-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* ── Form fields ── */
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .field-group input,
+        .field-group textarea {
+            width: 100%;
+            background: rgba(10, 22, 42, 0.8);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 15px;
+            font-family: inherit;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .field-group input:focus,
+        .field-group textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+        }
+
+        .field-group input::placeholder,
+        .field-group textarea::placeholder {
+            color: #334155;
+        }
+
+        /* ── Interests grid ── */
+        .interests-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .interest-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(14, 165, 233, 0.06);
+            border: 1px solid #1e3a5f;
+            border-radius: 99px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .interest-chip input {
+            display: none;
+        }
+
+        .interest-chip:hover {
+            border-color: #38bdf8;
+            color: #e2e8f0;
+        }
+
+        .interest-chip:has(input:checked) {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: #0ea5e9;
+            color: #38bdf8;
+        }
+
+        /* ── Welcome emoji ── */
+        .welcome-emoji {
+            font-size: 56px;
+            text-align: center;
+            margin-bottom: 24px;
+            display: block;
+            animation: wave 1.4s ease-in-out infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            20% {
+                transform: rotate(18deg);
+            }
+
+            40% {
+                transform: rotate(-10deg);
+            }
+
+            60% {
+                transform: rotate(14deg);
+            }
+
+            80% {
+                transform: rotate(-6deg);
+            }
+        }
+
+        /* ── Done checkmark ── */
+        .done-check {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.35);
+        }
+
+        /* ── Buttons ── */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(14, 165, 233, 0.45);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+            border: 1px solid #1e3a5f;
+        }
+
+        .btn-ghost:hover {
+            color: #94a3b8;
+            border-color: #334155;
+        }
+
+        /* ── Skip text ── */
+        .skip-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .skip-link a {
+            color: #64748b;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .skip-link a:hover {
+            color: #94a3b8;
+        }
+
+        /* ── Error msg ── */
+        .error-msg {
+            color: #f87171;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .wizard-card {
+                padding: 32px 24px;
+            }
+
+            .step-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wizard-card">
+
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress-step active" id="pdot-1">
+                <div class="step-dot">1</div>
+                <span class="step-label">Welcome</span>
+            </div>
+            <div class="progress-step" id="pdot-2">
+                <div class="step-dot">2</div>
+                <span class="step-label">Profile</span>
+            </div>
+            <div class="progress-step" id="pdot-3">
+                <div class="step-dot">3</div>
+                <span class="step-label">Interests</span>
+            </div>
+            <div class="progress-step" id="pdot-4">
+                <div class="step-dot">✓</div>
+                <span class="step-label">Done</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Welcome -->
+        <div class="step-panel active" id="step-1">
+            <span class="welcome-emoji">👋</span>
+            <h1 class="step-title">Welcome to <span>AgastyaGPT</span>!</h1>
+            <p class="step-subtitle">
+                Let's take 2 minutes to set up your account so we can personalise your AI experience.
+            </p>
+            <p class="step-subtitle" style="color:#475569; font-size:13px;">
+                Signed in as: <strong id="welcome-email" style="color:#38bdf8;">Loading…</strong>
+            </p>
+            <div class="btn-row" style="justify-content: center; margin-top: 32px;">
+                <button class="btn btn-primary" onclick="goTo(2)">Get Started →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Personal Info -->
+        <div class="step-panel" id="step-2">
+            <h2 class="step-title">Tell us about <span>yourself</span></h2>
+            <p class="step-subtitle">Fill in your personal details. You can always update these later.</p>
+
+            <div class="field-group">
+                <label>Full Name *</label>
+                <input type="text" id="setup-name" placeholder="e.g. Agastya Sharma" autocomplete="name">
+            </div>
+            <div class="field-group">
+                <label>Location</label>
+                <input type="text" id="setup-location" placeholder="e.g. Mumbai, India" autocomplete="country-name">
+            </div>
+            <div class="field-group">
+                <label>Languages <span style="color:#475569;">(comma-separated)</span></label>
+                <input type="text" id="setup-languages" placeholder="e.g. English, Hindi">
+            </div>
+            <div class="field-group">
+                <label>Short Bio</label>
+                <textarea id="setup-bio" placeholder="Tell us a bit about yourself…"></textarea>
+            </div>
+
+            <p class="error-msg" id="step2-error">Please enter your full name to continue.</p>
+
+            <div class="btn-row">
+                <button class="btn btn-ghost" onclick="goTo(1)">Back</button>
+                <button class="btn btn-primary" onclick="validateStep2()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Interests -->
+        <div class="step-panel" id="step-3">
+            <h2 class="step-title">Pick your <span>interests</span></h2>
+            <p class="step-subtitle">Help us tailor your AI experience. Select all that apply.</p>
+
+            <div class="interests-grid">
+                <label class="interest-chip"><input type="checkbox" value="Data Science"> 📊 Data Science</label>
+                <label class="interest-chip"><input type="checkbox" value="Healthcare"> 🏥 Healthcare</label>
+                <label class="interest-chip"><input type="checkbox" value="Finance"> 💹 Finance</label>
+                <label class="interest-chip"><input type="checkbox" value="Automation"> 🤖 Automation</label>
+                <label class="interest-chip"><input type="checkbox" value="Productivity"> ⚡ Productivity</label>
+                <label class="interest-chip"><input type="checkbox" value="Research"> 🔬 Research</label>
+                <label class="interest-chip"><input type="checkbox" value="Education"> 📚 Education</label>
+                <label class="interest-chip"><input type="checkbox" value="Marketing"> 📣 Marketing</label>
+                <label class="interest-chip"><input type="checkbox" value="Engineering"> ⚙️ Engineering</label>
+                <label class="interest-chip"><input type="checkbox" value="Design"> 🎨 Design</label>
+                <label class="interest-chip"><input type="checkbox" value="Legal"> ⚖️ Legal</label>
+                <label class="interest-chip"><input type="checkbox" value="Sustainability"> 🌱 Sustainability</label>
+            </div>
+
+            <p class="error-msg" id="step3-error">Please select at least one interest.</p>
+
+            <div class="btn-row">
+                <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
+                <button class="btn btn-primary" id="finish-btn" onclick="finishSetup()">Finish Setup ✓</button>
+            </div>
+            <div class="skip-link">
+                <a onclick="skipInterests()">Skip for now</a>
+            </div>
+        </div>
+
+        <!-- Step 4: Done -->
+        <div class="step-panel" id="step-4">
+            <div class="done-check">✓</div>
+            <h2 class="step-title" style="text-align:center;">You're all <span>set!</span></h2>
+            <p class="step-subtitle" style="text-align:center; margin-bottom: 8px;">
+                Your account is ready. Welcome aboard, <strong id="done-name" style="color:#38bdf8;">friend</strong>!
+            </p>
+            <p class="step-subtitle" style="text-align:center; color:#475569;">
+                Redirecting you to your dashboard…
+            </p>
+            <div class="btn-row" style="justify-content:center; margin-top: 28px;">
+                <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard
+                    →</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+        let currentStep = 1;
+
+        // ── Auth guard + pre-fill name from token ────────────────────────────────
+        (function init() {
+            const token = localStorage.getItem("id_token");
+            if (!token) { window.location.href = "callback.html"; return; }
+
+            // Check token expiry before doing anything
+            try {
+                const payload = JSON.parse(atob(token.split(".")[1]));
+                const now = Math.floor(Date.now() / 1000);
+                if (payload.exp && payload.exp < now) {
+                    // Token already expired — re-authenticate
+                    redirectToLogin();
+                    return;
+                }
+
+                const email = payload.email || "";
+                const name = payload.name || "";
+                document.getElementById("welcome-email").textContent = email || "your account";
+                if (name) document.getElementById("setup-name").value = name;
+            } catch (e) {
+                console.warn("Could not decode token:", e);
+            }
+        })();
+
+        // ── Redirect to login (clears stale tokens first) ─────────────────────────
+        function redirectToLogin() {
+            localStorage.removeItem("id_token");
+            localStorage.removeItem("access_token");
+            window.location.href = "callback.html";
+        }
+
+        // ── Step navigation ──────────────────────────────────────────────────────
+        function goTo(n) {
+            document.getElementById(`step-${currentStep}`).classList.remove("active");
+            updateDots(n);
+            currentStep = n;
+            document.getElementById(`step-${n}`).classList.add("active");
+        }
+
+        function updateDots(active) {
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.getElementById(`pdot-${i}`);
+                dot.classList.remove("active", "completed");
+                if (i < active) dot.classList.add("completed");
+                if (i === active) dot.classList.add("active");
+            }
+        }
+
+        // ── Step 2 validation ────────────────────────────────────────────────────
+        function validateStep2() {
+            const name = document.getElementById("setup-name").value.trim();
+            const errEl = document.getElementById("step2-error");
+            if (!name) {
+                errEl.style.display = "block";
+                return;
+            }
+            errEl.style.display = "none";
+            goTo(3);
+        }
+
+        // ── Finish: upload all data ──────────────────────────────────────────────
+        async function finishSetup(skipInterestsFlag = false) {
+            const errEl = document.getElementById("step3-error");
+
+            // Collect interests
+            const checked = [...document.querySelectorAll(".interests-grid input:checked")].map(el => el.value);
+            if (!skipInterestsFlag && checked.length === 0) {
+                errEl.style.display = "block";
+                return;
+            }
+            errEl.style.display = "none";
+
+            const btn = document.getElementById("finish-btn");
+            btn.disabled = true;
+            btn.textContent = "Saving…";
+
+            const name = document.getElementById("setup-name").value.trim();
+            const location = document.getElementById("setup-location").value.trim();
+            const languages = document.getElementById("setup-languages").value
+                .split(",").map(l => l.trim()).filter(Boolean);
+            const bio = document.getElementById("setup-bio").value.trim();
+
+            const payload = {
+                name,
+                location,
+                languages,
+                bio,
+                interests: checked,
+                onboardingComplete: true
+            };
+
+            try {
+                const jwtToken = localStorage.getItem("id_token");
+                const res = await fetch(`${API_BASE}/profile`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Token expired — re-authenticate immediately
+                if (res.status === 401) {
+                    redirectToLogin();
+                    return;
+                }
+
+                if (!res.ok) throw new Error("HTTP " + res.status);
+
+                // Show done screen
+                document.getElementById("done-name").textContent = name || "friend";
+                goTo(4);
+
+                // Auto-redirect after 3 seconds
+                setTimeout(() => window.location.href = "dashboard.html", 3000);
+
+            } catch (err) {
+                console.error("Setup error:", err);
+                btn.disabled = false;
+                btn.textContent = "Finish Setup ✓";
+                errEl.textContent = "Something went wrong. Please try again.";
+                errEl.style.display = "block";
+            }
+        }
+
+        function skipInterests() {
+            finishSetup(true);
+        }
+    </script>
+
+</body>
+
+</html>

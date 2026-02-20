@@ -39,22 +39,28 @@
     }
 
     .nav-links {
-        position: absolute;
+        position: fixed;
+        /* fixed so it overlays correctly without layout shifts */
         left: 0px;
         height: calc(100vh - 80px);
-        /* 80px is header height */
         top: 80px;
         background-color: #020617;
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 50%;
-        transform: translateX(-100%);
+        width: 70%;
+        transform: translateX(-110%);
+        /* hide fully off-screen */
         transition: transform 0.5s ease-in, top 0.3s ease, height 0.3s ease;
-        /* Add transition for top/height */
         border-right: 1px solid #1f2937;
         z-index: 1000;
         padding-top: 60px;
+        pointer-events: none;
+        /* ignore clicks when hidden */
+    }
+
+    .nav-links.nav-active {
+        pointer-events: auto;
     }
 
     header.shrunk .nav-links {

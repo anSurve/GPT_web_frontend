@@ -3,27 +3,101 @@
 
 <head>
     <title>Logging in...</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: sans-serif;
+            color: #94a3b8;
+        }
+
+        p {
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
-    <p>Logging you in...</p>
+    <p id="status">Logging you in…</p>
 
     <script>
+        const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+        const LOGIN_URL = "https://us-east-1senj5cvnr.auth.us-east-1.amazoncognito.com/login"
+            + "?client_id=1u4dbf3uu4s4fvnb4g7lo9o59"
+            + "&redirect_uri=" + encodeURIComponent("https://www.agastyagpt.com/callback.html")
+            + "&response_type=token"
+            + "&scope=email+openid+phone";
+
         const hash = new URLSearchParams(window.location.hash.substring(1));
+        const params = new URLSearchParams(window.location.search);
 
         const idToken = hash.get("id_token");
         const accessToken = hash.get("access_token");
-        // console.log(idToken);
-        // console.log(accessToken);
-        if (!idToken) {
-            alert("Login failed");
-            console.log("Login failed");
-            window.location.href = "/";
-        }
-        else {
+
+        // Cognito sometimes sends errors as query-params or hash-params
+        const oauthError = hash.get("error") || params.get("error");
+
+        if (oauthError) {
+            // First-time Google users can get 'access_denied' while Cognito
+            // finishes provisioning the account. Auto-retry once after 1.5 s.
+            const retried = sessionStorage.getItem("auth_retried");
+
+            if (!retried) {
+                document.getElementById("status").textContent =
+                    "Almost there — retrying sign in…";
+                sessionStorage.setItem("auth_retried", "1");
+                // Small delay so Cognito finishes creating the account
+                setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+            } else {
+                // Two consecutive failures → give up and ask user to try manually
+                sessionStorage.removeItem("auth_retried");
+                document.getElementById("status").textContent =
+                    "Sign-in failed. Redirecting to login…";
+                setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+            }
+
+        } else if (!idToken) {
+            // No token and no error — unexpected state, go back to login
+            sessionStorage.removeItem("auth_retried");
+            document.getElementById("status").textContent =
+                "No token received. Redirecting…";
+            setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+
+        } else {
+            // ── Happy path ───────────────────────────────────────────────────
+            sessionStorage.removeItem("auth_retried");
             localStorage.setItem("id_token", idToken);
             localStorage.setItem("access_token", accessToken);
-            window.location.href = "/dashboard.html";
+
+            // Check whether this is a new user (onboardingComplete = false)
+            fetch(`${API_BASE}/profile`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${idToken}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("HTTP " + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.onboardingComplete === false || data.onboardingComplete === undefined) {
+                        window.location.href = "setup.html";   // New user → wizard
+                    } else {
+                        window.location.href = "dashboard.html"; // Returning user
+                    }
+                })
+                .catch(err => {
+                    console.error("Profile check failed:", err);
+                    // If the profile API fails for any reason, send new user to setup
+                    // (safe fallback — they can fill in details there)
+                    window.location.href = "setup.html";
+                });
         }
     </script>
 </body>
