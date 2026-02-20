@@ -9,35 +9,278 @@
     <link rel="stylesheet" href="styles/style.css">
     <script src="scripts/auth.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = checkAuth();
-            const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
+        // ── Config ──────────────────────────────────────────────────────────
+        const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+        const DEFAULT_AVATAR = "images/logo.png";
+
+        // ── Navigation tabs ──────────────────────────────────────────────────
+        function showSection(sectionId, el) {
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.profile-sidebar li').forEach(li => li.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // ── Fetch profile data ───────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', async () => {
+            checkAuth();
             const jwtToken = localStorage.getItem("id_token");
 
-            fetch(API_URL, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${jwtToken}`,
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(res => {
-                    if (!res.ok) throw new Error("HTTP " + res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    // Fetch user details from response
-                    const email = data.email || 'N/A';
-                    const userId = data.userId || 'N/A'; // Assuming userId might be returned
-
-                    document.getElementById("profile-email").innerText = email;
-                    // document.getElementById("profile-name").innerText = "User"; // Placeholder or fetch if available
-                })
-                .catch(err => {
-                    console.error("API error:", err);
-                    document.getElementById("profile-email").innerText = "Error loading data";
+            try {
+                const res = await fetch(`${API_BASE}/profile`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json"
+                    }
                 });
+
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+
+                // Populate text fields
+                document.getElementById("profile-email").innerText = data.email || 'N/A';
+                document.getElementById("profile-name").innerText = data.name || 'N/A';
+                document.getElementById("profile-location").innerText = data.location || 'N/A';
+                document.getElementById("profile-languages").innerText = Array.isArray(data.languages)
+                    ? data.languages.join(', ')
+                    : (data.languages || 'N/A');
+                document.getElementById("profile-bio").innerText = data.bio || 'No bio provided.';
+                document.getElementById("sidebar-name").innerText = data.name || 'User';
+
+                // Load avatar from S3 URL returned by API, fall back to default
+                const avatarUrl = data.profile_pic_url || DEFAULT_AVATAR;
+                setAvatar(avatarUrl);
+            } catch (err) {
+                console.error("Profile API error:", err);
+                document.getElementById("profile-email").innerText = "Error loading data";
+                setAvatar(DEFAULT_AVATAR);
+            }
         });
+
+        // ── Avatar helpers ───────────────────────────────────────────────────
+        let pendingAvatarFile = null;   // file selected but not yet saved
+        let originalAvatarUrl = null;   // URL before edit mode, used for cancel
+
+        function setAvatar(url) {
+            document.getElementById("sidebar-avatar").src = url;
+            document.getElementById("main-avatar").src = url;
+        }
+
+        function triggerAvatarUpload() {
+            document.getElementById("avatar-file-input").click();
+        }
+
+        // File selected → local preview only (no upload yet)
+        function handleAvatarChange(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                showUploadStatus("Only image files are allowed.", "error");
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showUploadStatus("File must be smaller than 5 MB.", "error");
+                return;
+            }
+
+            // Store for upload at Save time
+            pendingAvatarFile = file;
+
+            // Show local preview immediately
+            const reader = new FileReader();
+            reader.onload = e => setAvatar(e.target.result);
+            reader.readAsDataURL(file);
+
+            showUploadStatus("Photo selected — click Save Changes to apply.", "info");
+        }
+
+        function showUploadStatus(msg, type) {
+            const el = document.getElementById("upload-status");
+            el.innerText = msg;
+            el.className = "upload-status " + type;
+            if (type === "success") setTimeout(() => el.innerText = "", 3000);
+        }
+
+        // ── Edit / Save profile ──────────────────────────────────────────────
+        // Fields that can be edited: [elementId, inputType]
+        const EDITABLE_FIELDS = [
+            { id: 'profile-name', type: 'input', placeholder: 'Full name' },
+            { id: 'profile-location', type: 'input', placeholder: 'City, Country' },
+            { id: 'profile-languages', type: 'input', placeholder: 'e.g. English, Hindi' },
+            { id: 'profile-bio', type: 'textarea', placeholder: 'Tell us a bit about yourself…' },
+        ];
+
+        function editProfile() {
+            // Snapshot the current avatar URL so cancel can revert it
+            originalAvatarUrl = document.getElementById('main-avatar').src;
+            pendingAvatarFile = null;
+
+            EDITABLE_FIELDS.forEach(({ id, type, placeholder }) => {
+                const span = document.getElementById(id);
+                const value = span.innerText.trim();
+                let input;
+                if (type === 'textarea') {
+                    input = document.createElement('textarea');
+                    input.className = 'field-input field-textarea';
+                    input.rows = 3;
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'field-input';
+                }
+                input.id = id + '-input';
+                input.value = (value === 'N/A' || value === 'No bio provided.') ? '' : value;
+                input.placeholder = placeholder;
+                span.replaceWith(input);
+            });
+
+            // Enable avatar click and hover overlay only in edit mode
+            const avatarWrapper = document.getElementById('main-avatar-wrapper');
+            avatarWrapper.style.pointerEvents = 'auto';
+            avatarWrapper.style.cursor = 'pointer';
+            avatarWrapper.classList.add('editable');
+            avatarWrapper.onclick = triggerAvatarUpload;
+
+            document.getElementById('edit-btn').style.display = 'none';
+            document.getElementById('save-btn').style.display = 'inline-flex';
+            document.getElementById('cancel-btn').style.display = 'inline-flex';
+        }
+
+        async function saveProfile() {
+            const jwtToken = localStorage.getItem("id_token");
+            const payload = {};
+
+            EDITABLE_FIELDS.forEach(({ id }) => {
+                const input = document.getElementById(id + '-input');
+                if (input) payload[id.replace('profile-', '')] = input.value.trim();
+            });
+
+            // Languages → array
+            if (payload.languages) {
+                payload.languages = payload.languages.split(',').map(l => l.trim()).filter(Boolean);
+            }
+
+            document.getElementById('save-btn').disabled = true;
+            document.getElementById('save-btn').innerText = 'Saving…';
+
+            try {
+                // ── Upload avatar if a new file was selected ──────────────────
+                if (pendingAvatarFile) {
+                    const file = pendingAvatarFile;
+
+                    const presignRes = await fetch(`${API_BASE}/profile/avatar/presign`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ contentType: file.type })
+                    });
+                    if (!presignRes.ok) throw new Error('Could not get upload URL');
+                    const { uploadUrl, fileUrl } = await presignRes.json();
+
+                    const uploadRes = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': file.type },
+                        body: file
+                    });
+                    if (!uploadRes.ok) throw new Error('S3 upload failed');
+
+                    // Include the S3 key in the profile payload
+                    payload.profile_pic_url = fileUrl;
+                    pendingAvatarFile = null;
+                }
+
+                // ── Save all profile fields in one request ────────────────────
+                const res = await fetch(`${API_BASE}/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                // If avatar was changed, fetch presigned GET URL to display it
+                if (payload.profile_pic_url) {
+                    const profileRes = await fetch(`${API_BASE}/profile`, {
+                        headers: { 'Authorization': `Bearer ${jwtToken}` }
+                    });
+                    if (profileRes.ok) {
+                        const pd = await profileRes.json();
+                        if (pd.profile_pic_url) setAvatar(pd.profile_pic_url);
+                    }
+                }
+
+                // Swap inputs back to spans
+                EDITABLE_FIELDS.forEach(({ id }) => {
+                    const input = document.getElementById(id + '-input');
+                    let displayVal = input ? input.value.trim() : '';
+                    if (id === 'profile-languages' && Array.isArray(payload.languages)) {
+                        displayVal = payload.languages.join(', ');
+                    }
+                    const span = document.createElement('span');
+                    span.id = id;
+                    span.innerText = displayVal || (id === 'profile-bio' ? 'No bio provided.' : 'N/A');
+                    input.replaceWith(span);
+                });
+
+                if (payload.name) document.getElementById('sidebar-name').innerText = payload.name;
+                showSaveStatus('Changes saved!', 'success');
+                showUploadStatus('', '');
+
+            } catch (err) {
+                console.error('Save error:', err);
+                showSaveStatus('Failed to save. Please try again.', 'error');
+            } finally {
+                document.getElementById('save-btn').disabled = false;
+                document.getElementById('save-btn').innerText = 'Save Changes';
+                document.getElementById('edit-btn').style.display = 'inline-flex';
+                document.getElementById('save-btn').style.display = 'none';
+                document.getElementById('cancel-btn').style.display = 'none';
+                disableAvatarEdit();
+            }
+        }
+
+        function cancelEdit() {
+            // Revert avatar preview if a new photo was staged but not saved
+            if (pendingAvatarFile && originalAvatarUrl) {
+                setAvatar(originalAvatarUrl);
+                showUploadStatus('', '');
+            }
+            pendingAvatarFile = null;
+
+            EDITABLE_FIELDS.forEach(({ id }) => {
+                const input = document.getElementById(id + '-input');
+                if (!input) return;
+                const span = document.createElement('span');
+                span.id = id;
+                span.innerText = input.value.trim() || (id === 'profile-bio' ? 'No bio provided.' : 'N/A');
+                input.replaceWith(span);
+            });
+            document.getElementById('edit-btn').style.display = 'inline-flex';
+            document.getElementById('save-btn').style.display = 'none';
+            document.getElementById('cancel-btn').style.display = 'none';
+            disableAvatarEdit();
+        }
+
+        function disableAvatarEdit() {
+            const w = document.getElementById('main-avatar-wrapper');
+            w.style.pointerEvents = 'none';
+            w.style.cursor = 'default';
+            w.classList.remove('editable');
+            w.onclick = null;
+        }
+
+        function showSaveStatus(msg, type) {
+            const el = document.getElementById('save-status');
+            el.innerText = msg;
+            el.className = 'upload-status ' + type;
+            setTimeout(() => el.innerText = '', 3500);
+        }
     </script>
 </head>
 
@@ -46,38 +289,133 @@
     <script src="scripts/include.js?v=2"></script>
     <script src="scripts/nav.js?v=2"></script>
 
-    <section class="hero" style="padding-top: 120px;"> <!-- Extra padding for fixed header -->
-        <h1>My Profile</h1>
-        <p>Manage your account details and settings.</p>
+    <!-- Hidden file input -->
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarChange(this)">
 
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <img src="images/logo.png" alt="User Avatar"
-                        style="width: 80px; height: 80px; border-radius: 50%; background: #1e293b; padding: 10px;">
-                </div>
-                <h2>User</h2>
-                <p>Member since 2026</p>
-            </div>
+    <main class="profile-page">
+        <div class="profile-layout">
 
-            <div class="profile-details">
-                <div class="detail-item">
-                    <label>Email Address</label>
-                    <span id="profile-email">Loading...</span>
+            <!-- ── Sidebar ───────────────────────────────────────────────── -->
+            <aside class="profile-sidebar">
+                <div class="sidebar-user">
+                    <!-- Sidebar avatar: display only, no edit overlay -->
+                    <div class="avatar-wrapper">
+                        <img id="sidebar-avatar" src="images/logo.png" alt="Avatar" class="sidebar-avatar">
+                    </div>
+                    <p class="sidebar-name" id="sidebar-name">User</p>
+                    <p id="upload-status" class="upload-status"></p>
                 </div>
-                <!-- Add more fields as API provides them -->
-                <div class="detail-item">
-                    <label>Account Status</label>
-                    <span style="color: #4ade80;">Active</span>
-                </div>
-            </div>
+                <ul>
+                    <li class="active" onclick="showSection('personal-details', this)">
+                        <span class="sidebar-icon">👤</span> Personal Details
+                    </li>
+                    <li onclick="showSection('account-settings', this)">
+                        <span class="sidebar-icon">⚙️</span> Account Settings
+                    </li>
+                    <li onclick="showSection('interests', this)">
+                        <span class="sidebar-icon">🌟</span> Interests
+                    </li>
+                </ul>
+            </aside>
 
-            <div class="profile-actions" style="margin-top: 30px;">
-                <button class="btn">Edit Profile</button>
-                <button class="btn btn-outline" style="margin-left: 10px;">Change Password</button>
-            </div>
+            <!-- ── Content Area ──────────────────────────────────────────── -->
+            <section class="profile-content-area">
+
+                <!-- Personal Details -->
+                <div id="personal-details" class="content-panel active">
+                    <div class="panel-header">
+                        <!-- Main avatar: clickable only while in edit mode -->
+                        <div id="main-avatar-wrapper" class="main-avatar-wrapper" title="Change profile picture">
+                            <img id="main-avatar" src="images/logo.png" alt="Avatar" class="main-avatar">
+                            <div class="avatar-overlay">
+                                <span class="avatar-edit-icon">✏️<br><small>Change Photo</small></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h2>Personal Details</h2>
+                            <p class="panel-subtitle">Your public profile information.</p>
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Full Name</label>
+                            <span id="profile-name">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email Address</label>
+                            <span id="profile-email">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Location</label>
+                            <span id="profile-location">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Languages</label>
+                            <span id="profile-languages">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Account Status</label>
+                            <span class="badge-active">Active</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Member Since</label>
+                            <span>2026</span>
+                        </div>
+                        <div class="detail-item detail-item--wide">
+                            <label>Bio</label>
+                            <span id="profile-bio">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="edit-actions" style="margin-top: 32px;">
+                        <button id="edit-btn" class="btn" onclick="editProfile()">Edit Profile</button>
+                        <button id="save-btn" class="btn" style="display:none" onclick="saveProfile()">Save
+                            Changes</button>
+                        <button id="cancel-btn" class="btn btn-outline" style="display:none"
+                            onclick="cancelEdit()">Cancel</button>
+                        <span id="save-status" class="upload-status" style="margin-left: 12px;"></span>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div id="account-settings" class="content-panel">
+                    <h2>Account Settings</h2>
+                    <p class="panel-subtitle">Manage your security and login preferences.</p>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Password</label>
+                            <span>••••••••••</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Two-Factor Authentication</label>
+                            <span>Not enabled</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn">Change Password</button>
+                        <button class="btn btn-danger">Delete Account</button>
+                    </div>
+                </div>
+
+                <!-- Interests -->
+                <div id="interests" class="content-panel">
+                    <h2>Interests</h2>
+                    <p class="panel-subtitle">Personalise your AI experience by selecting topics you care about.</p>
+                    <div class="interests-grid">
+                        <label class="interest-chip"><input type="checkbox" checked> Data Science</label>
+                        <label class="interest-chip"><input type="checkbox"> Healthcare</label>
+                        <label class="interest-chip"><input type="checkbox"> Automation</label>
+                        <label class="interest-chip"><input type="checkbox"> Finance</label>
+                        <label class="interest-chip"><input type="checkbox"> Productivity</label>
+                        <label class="interest-chip"><input type="checkbox"> Research</label>
+                    </div>
+                    <div style="margin-top: 32px;">
+                        <button class="btn">Save Interests</button>
+                    </div>
+                </div>
+
+            </section>
         </div>
-    </section>
+    </main>
 
     <div data-include="/partials/footer.html"></div>
 </body>
