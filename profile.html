@@ -47,6 +47,7 @@
                 // Populate text fields
                 document.getElementById("profile-email").innerText = data.email || 'N/A';
                 document.getElementById("profile-name").innerText = data.name || 'N/A';
+                document.getElementById("profile-phone").innerText = data.phone || 'N/A';
                 document.getElementById("profile-location").innerText = data.location || 'N/A';
                 document.getElementById("profile-languages").innerText = Array.isArray(data.languages)
                     ? data.languages.join(', ')
@@ -113,6 +114,7 @@
         // Fields that can be edited: [elementId, inputType]
         const EDITABLE_FIELDS = [
             { id: 'profile-name', type: 'input', placeholder: 'Full name' },
+            { id: 'profile-phone', type: 'input', placeholder: '+91 98765 43210' },
             { id: 'profile-location', type: 'input', placeholder: 'City, Country' },
             { id: 'profile-languages', type: 'input', placeholder: 'e.g. English, Hindi' },
             { id: 'profile-bio', type: 'textarea', placeholder: 'Tell us a bit about yourself…' },
@@ -167,6 +169,8 @@
             if (payload.languages) {
                 payload.languages = payload.languages.split(',').map(l => l.trim()).filter(Boolean);
             }
+            // Rename field key (strip 'profile-' prefix maps 'phone' correctly)
+            // EDITABLE_FIELDS id='profile-phone' → key='phone' ✓
 
             document.getElementById('save-btn').disabled = true;
             document.getElementById('save-btn').innerText = 'Saving…';
@@ -368,6 +372,10 @@
                         <div class="detail-item">
                             <label>Full Name</label>
                             <span id="profile-name">Loading...</span>
+                        </div>
+                        <div class="detail-item" id="phone-item">
+                            <label>Mobile Number</label>
+                            <span id="profile-phone">Loading...</span>
                         </div>
                         <div class="detail-item">
                             <label>Email Address</label>

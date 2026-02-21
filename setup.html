@@ -381,6 +381,312 @@
             display: none;
         }
 
+        /* ── Location autocomplete ── */
+        .loc-input-wrap {
+            position: relative;
+        }
+
+        .loc-text-input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .loc-suggestions {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #0f1e37;
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            overflow: hidden;
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #1e3a5f transparent;
+        }
+
+        .loc-suggestions.open {
+            display: block;
+        }
+
+        .loc-suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .loc-suggestion-item:hover,
+        .loc-suggestion-item.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: #e2e8f0;
+        }
+
+        .loc-suggestion-item img {
+            width: 20px;
+            height: 14px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .loc-suggestion-item .loc-city {
+            font-weight: 500;
+        }
+
+        .loc-suggestion-item .loc-country {
+            margin-left: auto;
+            color: #475569;
+            font-size: 12px;
+        }
+
+        /* ── Language tag-input ── */
+        .lang-input-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            min-height: 48px;
+            background: rgba(10, 22, 42, 0.8);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: text;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .lang-input-wrap:focus-within {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+        }
+
+        .lang-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid #0ea5e9;
+            border-radius: 99px;
+            padding: 3px 10px 3px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #38bdf8;
+            white-space: nowrap;
+        }
+
+        .lang-tag-remove {
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            color: #64748b;
+            transition: color 0.15s;
+        }
+
+        .lang-tag-remove:hover {
+            color: #f87171;
+        }
+
+        .lang-text-input {
+            flex: 1;
+            min-width: 120px;
+            background: transparent;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            padding: 2px 0;
+        }
+
+        .lang-text-input::placeholder {
+            color: #475569;
+        }
+
+        .lang-suggestions {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #0f1e37;
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            overflow: hidden;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .lang-suggestions.open {
+            display: block;
+        }
+
+        .lang-suggestion-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .lang-suggestion-item:hover,
+        .lang-suggestion-item.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: #e2e8f0;
+        }
+
+        .lang-suggestion-item.add-custom {
+            color: #38bdf8;
+        }
+
+        /* ── Phone row ── */
+        .phone-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phone-row input[type="tel"] {
+            flex: 1;
+        }
+
+        /* Custom country code picker */
+        .country-picker {
+            position: relative;
+            width: 110px;
+            flex-shrink: 0;
+        }
+
+        .country-trigger {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+            min-height: 48px;
+            background: rgba(10, 22, 42, 0.8);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 0 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .country-trigger:hover,
+        .country-picker.open .country-trigger {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+        }
+
+        .country-trigger img {
+            width: 22px;
+            height: 15px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .country-trigger .chevron {
+            margin-left: auto;
+            font-size: 10px;
+            color: #64748b;
+            transition: transform 0.2s;
+        }
+
+        .country-picker.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .country-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 260px;
+            background: #0f1e37;
+            border: 1px solid #1e3a5f;
+            border-radius: 12px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .country-picker.open .country-dropdown {
+            display: block;
+        }
+
+        .country-search {
+            width: 100%;
+            background: rgba(10, 22, 42, 0.9);
+            border: none;
+            border-bottom: 1px solid #1e3a5f;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-family: inherit;
+            padding: 10px 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .country-search::placeholder {
+            color: #475569;
+        }
+
+        .country-list {
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #1e3a5f transparent;
+        }
+
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #cbd5e1;
+            transition: background 0.15s;
+        }
+
+        .country-option:hover,
+        .country-option.selected {
+            background: rgba(56, 189, 248, 0.1);
+            color: #e2e8f0;
+        }
+
+        .country-option img {
+            width: 22px;
+            height: 15px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .country-option .dial {
+            margin-left: auto;
+            color: #475569;
+            font-size: 12px;
+        }
+
         @media (max-width: 600px) {
             .wizard-card {
                 padding: 32px 24px;
@@ -443,11 +749,44 @@
             </div>
             <div class="field-group">
                 <label>Location</label>
-                <input type="text" id="setup-location" placeholder="e.g. Mumbai, India" autocomplete="country-name">
+                <div class="loc-input-wrap" id="loc-input-wrap">
+                    <input type="text" id="loc-text" class="loc-text-input" placeholder="e.g. Mumbai or India…"
+                        autocomplete="off" oninput="locOnInput(this.value)" onkeydown="locOnKeydown(event)">
+                    <div class="loc-suggestions" id="loc-suggestions"></div>
+                </div>
+                <input type="hidden" id="setup-location">
             </div>
             <div class="field-group">
-                <label>Languages <span style="color:#475569;">(comma-separated)</span></label>
-                <input type="text" id="setup-languages" placeholder="e.g. English, Hindi">
+                <label>Mobile Number</label>
+                <div class="phone-row">
+
+                    <!-- Custom country code picker -->
+                    <div class="country-picker" id="country-picker">
+                        <input type="hidden" id="setup-phone-code" value="+91">
+                        <div class="country-trigger" id="country-trigger" onclick="toggleCountryPicker()">
+                            <img id="selected-flag" src="https://flagcdn.com/w40/in.png" alt="IN">
+                            <span id="selected-code">+91</span>
+                            <span class="chevron">▼</span>
+                        </div>
+                        <div class="country-dropdown" id="country-dropdown">
+                            <input class="country-search" id="country-search" type="text" placeholder="Search country…"
+                                oninput="filterCountries(this.value)">
+                            <div class="country-list" id="country-list"></div>
+                        </div>
+                    </div>
+
+                    <input type="tel" id="setup-phone-number" placeholder="98765 43210" autocomplete="tel-national">
+                </div>
+            </div>
+            <div class="field-group">
+                <label>Languages</label>
+                <div class="lang-input-wrap" id="lang-input-wrap"
+                    onclick="document.getElementById('lang-text').focus()">
+                    <!-- tags injected here by JS -->
+                    <input type="text" id="lang-text" class="lang-text-input" placeholder="Type a language…"
+                        autocomplete="off" oninput="langOnInput(this.value)" onkeydown="langOnKeydown(event)">
+                    <div class="lang-suggestions" id="lang-suggestions"></div>
+                </div>
             </div>
             <div class="field-group">
                 <label>Short Bio</label>
@@ -514,6 +853,358 @@
     <script>
         const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
         let currentStep = 1;
+
+        // ── Country picker data ───────────────────────────────────────────────────
+        const COUNTRIES = [
+            { iso: "in", dial: "+91", name: "India" },
+            { iso: "us", dial: "+1", name: "United States" },
+            { iso: "ca", dial: "+1", name: "Canada" },
+            { iso: "gb", dial: "+44", name: "United Kingdom" },
+            { iso: "au", dial: "+61", name: "Australia" },
+            { iso: "nz", dial: "+64", name: "New Zealand" },
+            { iso: "de", dial: "+49", name: "Germany" },
+            { iso: "fr", dial: "+33", name: "France" },
+            { iso: "es", dial: "+34", name: "Spain" },
+            { iso: "it", dial: "+39", name: "Italy" },
+            { iso: "nl", dial: "+31", name: "Netherlands" },
+            { iso: "se", dial: "+46", name: "Sweden" },
+            { iso: "no", dial: "+47", name: "Norway" },
+            { iso: "dk", dial: "+45", name: "Denmark" },
+            { iso: "fi", dial: "+358", name: "Finland" },
+            { iso: "ch", dial: "+41", name: "Switzerland" },
+            { iso: "at", dial: "+43", name: "Austria" },
+            { iso: "be", dial: "+32", name: "Belgium" },
+            { iso: "pt", dial: "+351", name: "Portugal" },
+            { iso: "pl", dial: "+48", name: "Poland" },
+            { iso: "ru", dial: "+7", name: "Russia" },
+            { iso: "cn", dial: "+86", name: "China" },
+            { iso: "jp", dial: "+81", name: "Japan" },
+            { iso: "kr", dial: "+82", name: "South Korea" },
+            { iso: "sg", dial: "+65", name: "Singapore" },
+            { iso: "my", dial: "+60", name: "Malaysia" },
+            { iso: "th", dial: "+66", name: "Thailand" },
+            { iso: "id", dial: "+62", name: "Indonesia" },
+            { iso: "ph", dial: "+63", name: "Philippines" },
+            { iso: "vn", dial: "+84", name: "Vietnam" },
+            { iso: "bd", dial: "+880", name: "Bangladesh" },
+            { iso: "pk", dial: "+92", name: "Pakistan" },
+            { iso: "lk", dial: "+94", name: "Sri Lanka" },
+            { iso: "ae", dial: "+971", name: "UAE" },
+            { iso: "sa", dial: "+966", name: "Saudi Arabia" },
+            { iso: "qa", dial: "+974", name: "Qatar" },
+            { iso: "il", dial: "+972", name: "Israel" },
+            { iso: "tr", dial: "+90", name: "Turkey" },
+            { iso: "eg", dial: "+20", name: "Egypt" },
+            { iso: "za", dial: "+27", name: "South Africa" },
+            { iso: "ng", dial: "+234", name: "Nigeria" },
+            { iso: "ke", dial: "+254", name: "Kenya" },
+            { iso: "br", dial: "+55", name: "Brazil" },
+            { iso: "mx", dial: "+52", name: "Mexico" },
+            { iso: "ar", dial: "+54", name: "Argentina" },
+            { iso: "cl", dial: "+56", name: "Chile" },
+            { iso: "co", dial: "+57", name: "Colombia" },
+        ];
+
+        let selectedCountry = COUNTRIES[0]; // default: India
+
+        function flagUrl(iso) {
+            return `https://flagcdn.com/w40/${iso}.png`;
+        }
+
+        function buildCountryList(filter = "") {
+            const list = document.getElementById("country-list");
+            const q = filter.toLowerCase();
+            const filtered = COUNTRIES.filter(c =>
+                c.name.toLowerCase().includes(q) || c.dial.includes(q)
+            );
+            list.innerHTML = filtered.map(c => `
+                <div class="country-option ${c === selectedCountry ? 'selected' : ''}"
+                     onclick="selectCountry('${c.iso}','${c.dial}','${c.name}')">
+                    <img src="${flagUrl(c.iso)}" alt="${c.iso.toUpperCase()}">
+                    <span>${c.name}</span>
+                    <span class="dial">${c.dial}</span>
+                </div>
+            `).join("");
+        }
+
+        function toggleCountryPicker() {
+            const picker = document.getElementById("country-picker");
+            const isOpen = picker.classList.toggle("open");
+            if (isOpen) {
+                document.getElementById("country-search").value = "";
+                buildCountryList();
+                setTimeout(() => document.getElementById("country-search").focus(), 50);
+            }
+        }
+
+        function filterCountries(q) {
+            buildCountryList(q);
+        }
+
+        function selectCountry(iso, dial, name) {
+            selectedCountry = COUNTRIES.find(c => c.iso === iso) || selectedCountry;
+            document.getElementById("selected-flag").src = flagUrl(iso);
+            document.getElementById("selected-flag").alt = iso.toUpperCase();
+            document.getElementById("selected-code").textContent = dial;
+            document.getElementById("setup-phone-code").value = dial;
+            document.getElementById("country-picker").classList.remove("open");
+        }
+
+        // Close on outside click
+        document.addEventListener("click", function (e) {
+            const picker = document.getElementById("country-picker");
+            if (picker && !picker.contains(e.target)) {
+                picker.classList.remove("open");
+            }
+        });
+
+        // Build list on first load so it's ready
+        buildCountryList();
+
+        // ── Location autocomplete ─────────────────────────────────────────────────
+        const CITIES = [
+            { city: "Mumbai", country: "India", iso: "in" }, { city: "Delhi", country: "India", iso: "in" },
+            { city: "Bangalore", country: "India", iso: "in" }, { city: "Hyderabad", country: "India", iso: "in" },
+            { city: "Chennai", country: "India", iso: "in" }, { city: "Kolkata", country: "India", iso: "in" },
+            { city: "Pune", country: "India", iso: "in" }, { city: "Ahmedabad", country: "India", iso: "in" },
+            { city: "Jaipur", country: "India", iso: "in" }, { city: "Surat", country: "India", iso: "in" },
+            { city: "New York", country: "United States", iso: "us" }, { city: "Los Angeles", country: "United States", iso: "us" },
+            { city: "Chicago", country: "United States", iso: "us" }, { city: "Houston", country: "United States", iso: "us" },
+            { city: "Phoenix", country: "United States", iso: "us" }, { city: "Philadelphia", country: "United States", iso: "us" },
+            { city: "San Antonio", country: "United States", iso: "us" }, { city: "San Diego", country: "United States", iso: "us" },
+            { city: "Dallas", country: "United States", iso: "us" }, { city: "San Francisco", country: "United States", iso: "us" },
+            { city: "Seattle", country: "United States", iso: "us" }, { city: "Austin", country: "United States", iso: "us" },
+            { city: "Boston", country: "United States", iso: "us" }, { city: "Washington DC", country: "United States", iso: "us" },
+            { city: "Toronto", country: "Canada", iso: "ca" }, { city: "Vancouver", country: "Canada", iso: "ca" },
+            { city: "Montreal", country: "Canada", iso: "ca" }, { city: "Calgary", country: "Canada", iso: "ca" },
+            { city: "London", country: "United Kingdom", iso: "gb" }, { city: "Manchester", country: "United Kingdom", iso: "gb" },
+            { city: "Birmingham", country: "United Kingdom", iso: "gb" }, { city: "Glasgow", country: "United Kingdom", iso: "gb" },
+            { city: "Sydney", country: "Australia", iso: "au" }, { city: "Melbourne", country: "Australia", iso: "au" },
+            { city: "Brisbane", country: "Australia", iso: "au" }, { city: "Perth", country: "Australia", iso: "au" },
+            { city: "Auckland", country: "New Zealand", iso: "nz" }, { city: "Wellington", country: "New Zealand", iso: "nz" },
+            { city: "Berlin", country: "Germany", iso: "de" }, { city: "Munich", country: "Germany", iso: "de" },
+            { city: "Hamburg", country: "Germany", iso: "de" }, { city: "Frankfurt", country: "Germany", iso: "de" },
+            { city: "Paris", country: "France", iso: "fr" }, { city: "Lyon", country: "France", iso: "fr" },
+            { city: "Marseille", country: "France", iso: "fr" },
+            { city: "Madrid", country: "Spain", iso: "es" }, { city: "Barcelona", country: "Spain", iso: "es" },
+            { city: "Rome", country: "Italy", iso: "it" }, { city: "Milan", country: "Italy", iso: "it" },
+            { city: "Naples", country: "Italy", iso: "it" },
+            { city: "Amsterdam", country: "Netherlands", iso: "nl" }, { city: "Rotterdam", country: "Netherlands", iso: "nl" },
+            { city: "Stockholm", country: "Sweden", iso: "se" }, { city: "Gothenburg", country: "Sweden", iso: "se" },
+            { city: "Oslo", country: "Norway", iso: "no" }, { city: "Copenhagen", country: "Denmark", iso: "dk" },
+            { city: "Helsinki", country: "Finland", iso: "fi" }, { city: "Zurich", country: "Switzerland", iso: "ch" },
+            { city: "Vienna", country: "Austria", iso: "at" }, { city: "Brussels", country: "Belgium", iso: "be" },
+            { city: "Lisbon", country: "Portugal", iso: "pt" }, { city: "Warsaw", country: "Poland", iso: "pl" },
+            { city: "Moscow", country: "Russia", iso: "ru" }, { city: "Saint Petersburg", country: "Russia", iso: "ru" },
+            { city: "Beijing", country: "China", iso: "cn" }, { city: "Shanghai", country: "China", iso: "cn" },
+            { city: "Guangzhou", country: "China", iso: "cn" }, { city: "Shenzhen", country: "China", iso: "cn" },
+            { city: "Chengdu", country: "China", iso: "cn" },
+            { city: "Tokyo", country: "Japan", iso: "jp" }, { city: "Osaka", country: "Japan", iso: "jp" },
+            { city: "Kyoto", country: "Japan", iso: "jp" }, { city: "Yokohama", country: "Japan", iso: "jp" },
+            { city: "Seoul", country: "South Korea", iso: "kr" }, { city: "Busan", country: "South Korea", iso: "kr" },
+            { city: "Singapore", country: "Singapore", iso: "sg" },
+            { city: "Kuala Lumpur", country: "Malaysia", iso: "my" }, { city: "Penang", country: "Malaysia", iso: "my" },
+            { city: "Bangkok", country: "Thailand", iso: "th" }, { city: "Chiang Mai", country: "Thailand", iso: "th" },
+            { city: "Jakarta", country: "Indonesia", iso: "id" }, { city: "Bali", country: "Indonesia", iso: "id" },
+            { city: "Manila", country: "Philippines", iso: "ph" }, { city: "Cebu", country: "Philippines", iso: "ph" },
+            { city: "Ho Chi Minh City", country: "Vietnam", iso: "vn" }, { city: "Hanoi", country: "Vietnam", iso: "vn" },
+            { city: "Dhaka", country: "Bangladesh", iso: "bd" },
+            { city: "Karachi", country: "Pakistan", iso: "pk" }, { city: "Lahore", country: "Pakistan", iso: "pk" },
+            { city: "Colombo", country: "Sri Lanka", iso: "lk" },
+            { city: "Dubai", country: "UAE", iso: "ae" }, { city: "Abu Dhabi", country: "UAE", iso: "ae" },
+            { city: "Riyadh", country: "Saudi Arabia", iso: "sa" }, { city: "Jeddah", country: "Saudi Arabia", iso: "sa" },
+            { city: "Doha", country: "Qatar", iso: "qa" }, { city: "Tel Aviv", country: "Israel", iso: "il" },
+            { city: "Istanbul", country: "Turkey", iso: "tr" }, { city: "Ankara", country: "Turkey", iso: "tr" },
+            { city: "Cairo", country: "Egypt", iso: "eg" }, { city: "Alexandria", country: "Egypt", iso: "eg" },
+            { city: "Johannesburg", country: "South Africa", iso: "za" }, { city: "Cape Town", country: "South Africa", iso: "za" },
+            { city: "Lagos", country: "Nigeria", iso: "ng" }, { city: "Abuja", country: "Nigeria", iso: "ng" },
+            { city: "Nairobi", country: "Kenya", iso: "ke" },
+            { city: "São Paulo", country: "Brazil", iso: "br" }, { city: "Rio de Janeiro", country: "Brazil", iso: "br" },
+            { city: "Brasília", country: "Brazil", iso: "br" },
+            { city: "Mexico City", country: "Mexico", iso: "mx" }, { city: "Guadalajara", country: "Mexico", iso: "mx" },
+            { city: "Buenos Aires", country: "Argentina", iso: "ar" },
+            { city: "Santiago", country: "Chile", iso: "cl" }, { city: "Bogotá", country: "Colombia", iso: "co" },
+        ];
+
+        let locActiveIdx = -1;
+
+        function locOnInput(val) {
+            const q = val.trim().toLowerCase();
+            const box = document.getElementById("loc-suggestions");
+            // Clear the hidden value when the user types freely
+            document.getElementById("setup-location").value = "";
+            if (!q) { box.classList.remove("open"); box.innerHTML = ""; locActiveIdx = -1; return; }
+
+            const matches = CITIES.filter(c =>
+                c.city.toLowerCase().includes(q) || c.country.toLowerCase().includes(q)
+            ).slice(0, 10);
+
+            if (!matches.length) { box.classList.remove("open"); box.innerHTML = ""; return; }
+
+            box.innerHTML = matches.map(c =>
+                `<div class="loc-suggestion-item" data-val="${c.city}, ${c.country}"
+                      onmousedown="selectLocation('${c.city.replace(/'/g, "\\'")}','${c.country.replace(/'/g, "\\'")}','${c.iso}')">
+                    <img src="https://flagcdn.com/w40/${c.iso}.png" alt="${c.iso}">
+                    <span class="loc-city">${c.city}</span>
+                    <span class="loc-country">${c.country}</span>
+                </div>`
+            ).join("");
+            box.classList.add("open");
+            locActiveIdx = -1;
+        }
+
+        function locOnKeydown(e) {
+            const box = document.getElementById("loc-suggestions");
+            const items = box.querySelectorAll(".loc-suggestion-item");
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                locActiveIdx = Math.min(locActiveIdx + 1, items.length - 1);
+                items.forEach((el, i) => el.classList.toggle("active", i === locActiveIdx));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                locActiveIdx = Math.max(locActiveIdx - 1, 0);
+                items.forEach((el, i) => el.classList.toggle("active", i === locActiveIdx));
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (locActiveIdx >= 0 && items[locActiveIdx]) {
+                    items[locActiveIdx].dispatchEvent(new MouseEvent("mousedown"));
+                }
+            } else if (e.key === "Escape") {
+                box.classList.remove("open");
+            }
+        }
+
+        function selectLocation(city, country, iso) {
+            const display = `${city}, ${country}`;
+            document.getElementById("loc-text").value = display;
+            document.getElementById("setup-location").value = display;
+            document.getElementById("loc-suggestions").classList.remove("open");
+            document.getElementById("loc-suggestions").innerHTML = "";
+
+            // Auto-sync phone country code to the selected location's country
+            const matched = COUNTRIES.find(c => c.iso === iso);
+            if (matched) selectCountry(matched.iso, matched.dial, matched.name);
+        }
+
+        // Close on outside click
+        document.addEventListener("click", function (e) {
+            const wrap = document.getElementById("loc-input-wrap");
+            if (wrap && !wrap.contains(e.target)) {
+                const box = document.getElementById("loc-suggestions");
+                if (box) box.classList.remove("open");
+            }
+        });
+
+        // ── Language tag-input ────────────────────────────────────────────────────
+        const LANG_LIST = [
+            "Afrikaans", "Arabic", "Bengali", "Bulgarian", "Catalan", "Chinese",
+            "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Finnish",
+            "French", "German", "Greek", "Gujarati", "Hebrew", "Hindi", "Hungarian",
+            "Indonesian", "Italian", "Japanese", "Kannada", "Korean", "Latvian",
+            "Lithuanian", "Malay", "Malayalam", "Marathi", "Norwegian", "Persian",
+            "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Serbian",
+            "Sinhala", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish",
+            "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Vietnamese"
+        ];
+
+        let selectedLanguages = [];
+        let langActiveIdx = -1;
+
+        function renderLangTags() {
+            const wrap = document.getElementById("lang-input-wrap");
+            const input = document.getElementById("lang-text");
+            const suggestions = document.getElementById("lang-suggestions");
+            // Remove old tags (keep input + suggestions)
+            [...wrap.children].forEach(c => {
+                if (c !== input && c !== suggestions) c.remove();
+            });
+            selectedLanguages.forEach((lang, i) => {
+                const tag = document.createElement("span");
+                tag.className = "lang-tag";
+                tag.innerHTML = `${lang} <span class="lang-tag-remove" onclick="removeLanguage(${i})">×</span>`;
+                wrap.insertBefore(tag, input);
+            });
+        }
+
+        function langOnInput(val) {
+            const q = val.trim().toLowerCase();
+            const box = document.getElementById("lang-suggestions");
+            if (!q) { box.classList.remove("open"); box.innerHTML = ""; langActiveIdx = -1; return; }
+
+            const matches = LANG_LIST.filter(l =>
+                l.toLowerCase().startsWith(q) && !selectedLanguages.includes(l)
+            ).slice(0, 8);
+
+            const items = matches.map((l, i) =>
+                `<div class="lang-suggestion-item" data-val="${l}" onmousedown="addLanguage('${l}')">${l}</div>`
+            );
+
+            // Add custom option if not an exact match
+            const exact = LANG_LIST.some(l => l.toLowerCase() === q);
+            const alreadyAdded = selectedLanguages.some(l => l.toLowerCase() === q);
+            if (!exact && !alreadyAdded) {
+                const pretty = val.trim().charAt(0).toUpperCase() + val.trim().slice(1);
+                items.push(`<div class="lang-suggestion-item add-custom" data-val="${pretty}" onmousedown="addLanguage('${pretty}')">+ Add "${pretty}"</div>`);
+            }
+
+            if (items.length === 0) { box.classList.remove("open"); box.innerHTML = ""; return; }
+            box.innerHTML = items.join("");
+            box.classList.add("open");
+            langActiveIdx = -1;
+        }
+
+        function langOnKeydown(e) {
+            const box = document.getElementById("lang-suggestions");
+            const items = box.querySelectorAll(".lang-suggestion-item");
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                langActiveIdx = Math.min(langActiveIdx + 1, items.length - 1);
+                items.forEach((el, i) => el.classList.toggle("active", i === langActiveIdx));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                langActiveIdx = Math.max(langActiveIdx - 1, 0);
+                items.forEach((el, i) => el.classList.toggle("active", i === langActiveIdx));
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (langActiveIdx >= 0 && items[langActiveIdx]) {
+                    addLanguage(items[langActiveIdx].dataset.val);
+                } else {
+                    const val = document.getElementById("lang-text").value.trim();
+                    if (val) addLanguage(val.charAt(0).toUpperCase() + val.slice(1));
+                }
+            } else if (e.key === "Backspace" && document.getElementById("lang-text").value === "") {
+                if (selectedLanguages.length) removeLanguage(selectedLanguages.length - 1);
+            } else if (e.key === "Escape") {
+                box.classList.remove("open");
+            }
+        }
+
+        function addLanguage(lang) {
+            if (!lang || selectedLanguages.includes(lang)) return;
+            selectedLanguages.push(lang);
+            renderLangTags();
+            const input = document.getElementById("lang-text");
+            input.value = "";
+            document.getElementById("lang-suggestions").classList.remove("open");
+            document.getElementById("lang-suggestions").innerHTML = "";
+            input.focus();
+        }
+
+        function removeLanguage(idx) {
+            selectedLanguages.splice(idx, 1);
+            renderLangTags();
+        }
+
+        // Close suggestions on outside click
+        document.addEventListener("click", function (e) {
+            const wrap = document.getElementById("lang-input-wrap");
+            if (wrap && !wrap.contains(e.target)) {
+                const box = document.getElementById("lang-suggestions");
+                if (box) { box.classList.remove("open"); }
+            }
+        });
+
 
         // ── Auth guard + pre-fill name from token ────────────────────────────────
         (function init() {
@@ -593,13 +1284,17 @@
 
             const name = document.getElementById("setup-name").value.trim();
             const location = document.getElementById("setup-location").value.trim();
-            const languages = document.getElementById("setup-languages").value
-                .split(",").map(l => l.trim()).filter(Boolean);
+            // Combine country code + local number; skip if number is blank
+            const phoneCode = document.getElementById("setup-phone-code").value.replace("-CA", "");
+            const phoneNumber = document.getElementById("setup-phone-number").value.trim();
+            const phone = phoneNumber ? `${phoneCode} ${phoneNumber}` : "";
+            const languages = selectedLanguages.slice();
             const bio = document.getElementById("setup-bio").value.trim();
 
             const payload = {
                 name,
                 location,
+                phone,
                 languages,
                 bio,
                 interests: checked,
