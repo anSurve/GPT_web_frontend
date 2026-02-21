@@ -40,26 +40,31 @@
 
 <body>
     <div data-include="/partials/loggedInNavbar.html"></div>
-    <script src="scripts/include.js?v=2"></script>
+    <script src="scripts/include.js?v=3"></script>
     <script src="scripts/nav.js?v=2"></script>
 
-    <section class="hero">
-        <h1>Welcome, <span id="user-name">User</span>!</h1>
-        <p>Your dashboard is ready. Explore your AI tools.</p>
-        <div>
-            Logged in as: <span id="email">Loading....</span>
+    <div style="padding: 16px 24px 0; font-size:14px; color:#64748b;">
+        Logged in as: <span id="email" style="color:#38bdf8;">Loading…</span>
+    </div>
+
+    <div class="features" style="padding-top: 12px;">
+        <div class="card">
+            <h3>App Integrations</h3>
+            <p>Integrate with your favorite apps.</p>
         </div>
-        <div class="features" style="margin-top: 40px;">
-            <div class="card">
-                <h3>My Projects</h3>
-                <p>Access your saved workflows and data analysis projects.</p>
-            </div>
-            <div class="card">
-                <h3>Settings</h3>
-                <p>Manage your profile and preferences.</p>
-            </div>
+        <div class="card">
+            <h3>Services</h3>
+            <p>Subscribe to our services.</p>
         </div>
-    </section>
+        <div class="card">
+            <h3>Tools</h3>
+            <p>Manage your tools.</p>
+        </div>
+        <div class="card">
+            <h3>Settings</h3>
+            <p>Manage your profile and preferences.</p>
+        </div>
+    </div>
 
     <div data-include="/partials/footer.html"></div>
 </body>
