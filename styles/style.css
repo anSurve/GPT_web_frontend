@@ -120,6 +120,10 @@ header.shrunk .btn {
     box-sizing: border-box;
 }
 
+.breadcrumb-link:hover {
+    color: #38bdf8 !important;
+}
+
 .card {
     background: #020617;
     padding: 30px;
@@ -130,6 +134,27 @@ header.shrunk .btn {
 .card h3 {
     margin-top: 0;
     color: #38bdf8;
+}
+
+.status-active {
+    color: #10b981;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-inactive {
+    color: #ef4444;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.channel-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
 }
 
 footer {

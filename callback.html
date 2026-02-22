@@ -29,9 +29,16 @@
         // const LOGIN_BASE_URL = "https://auth.agastyagpt.com";
 
         const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+
+        // Dynamically set redirect_uri based on environment
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const REDIRECT_URI = isLocal
+            ? window.location.origin + "/callback.html"
+            : "https://www.agastyagpt.com/callback.html";
+
         const LOGIN_URL = LOGIN_BASE_URL + "/login"
             + "?client_id=1u4dbf3uu4s4fvnb4g7lo9o59"
-            + "&redirect_uri=" + encodeURIComponent("https://www.agastyagpt.com/callback.html")
+            + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
             + "&response_type=token"
             + "&scope=email+openid+phone";
 
@@ -54,13 +61,13 @@
                     "Almost there — retrying sign in…";
                 sessionStorage.setItem("auth_retried", "1");
                 // Small delay so Cognito finishes creating the account
-                setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+                setTimeout(() => { window.location.href = LOGIN_URL; }, 1500);
             } else {
                 // Two consecutive failures → give up and ask user to try manually
                 sessionStorage.removeItem("auth_retried");
                 document.getElementById("status").textContent =
                     "Sign-in failed. Redirecting to login…";
-                setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+                setTimeout(() => { window.location.href = LOGIN_URL; }, 1500);
             }
 
         } else if (!idToken) {
@@ -68,7 +75,7 @@
             sessionStorage.removeItem("auth_retried");
             document.getElementById("status").textContent =
                 "No token received. Redirecting…";
-            setTimeout(() => { window.location.href = LOGIN_URL; }, 5000);
+            setTimeout(() => { window.location.href = LOGIN_URL; }, 1500);
 
         } else {
             // ── Happy path ───────────────────────────────────────────────────

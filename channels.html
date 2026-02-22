@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.ico" />
+    <title>Communication Channels - AgastyaGPT</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
+            const jwtToken = localStorage.getItem("id_token");
+
+            fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${jwtToken}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        if (res.status === 401 || res.status === 403) {
+                            window.location.href = "callback.html";
+                        }
+                        throw new Error("HTTP " + res.status);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    const email = data.email;
+                    document.getElementById("email").innerText = email;
+                })
+                .catch(err => {
+                    console.error("API error:", err);
+                    window.location.href = "callback.html";
+                });
+        });
+
+    </script>
+</head>
+
+<body>
+    <div data-include="/partials/loggedInNavbar.html"></div>
+    <script src="scripts/include.js?v=3"></script>
+    <script src="scripts/nav.js?v=2"></script>
+
+    <div style="padding: 16px 24px 0; font-size:14px; color:#64748b; display: flex; align-items: center; gap: 8px;">
+        <a href="dashboard.html" class="breadcrumb-link" style="color: #64748b; text-decoration: none;">Dashboard</a>
+        <span>/</span>
+        <span style="color: #e2e8f0;">Communication Channels</span>
+    </div>
+
+    <div style="padding: 8px 24px 0; font-size:14px; color:#64748b;">
+        Logged in as: <span id="email" style="color:#38bdf8;">Loading…</span>
+    </div>
+
+    <div class="hero" style="padding: 24px 24px 0; text-align: left; max-width: 1100px; margin: 0 auto;">
+        <h2 style="font-size: 32px; margin-bottom: 8px; color: #f8fafc;">Communication <span>Channels</span></h2>
+        <p style="font-size: 16px; color: #94a3b8; margin-bottom: 32px;">Connect and interact with your personal AI
+            through these platforms.</p>
+    </div>
+
+    <div class="features" style="padding-top: 0; max-width: 1100px; margin: 0 auto;">
+        <!-- WhatsApp -->
+        <div class="card">
+            <div class="channel-icon">💬</div>
+            <h3>WhatsApp</h3>
+            <p>Get real-time updates and chat with AgastyaGPT directly on WhatsApp.</p>
+            <div class="status-active">
+                <span
+                    style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                Active
+            </div>
+        </div>
+
+        <!-- Telegram -->
+        <div class="card">
+            <div class="channel-icon">💬</div>
+            <h3>Telegram</h3>
+            <p>Use our official Telegram bot for seamless automation and health tracking.</p>
+            <div class="status-active">
+                <span
+                    style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                Active
+            </div>
+        </div>
+
+        <!-- Discord -->
+        <div class="card">
+            <div class="channel-icon">💬</div>
+            <h3>Discord</h3>
+            <p>Add AgastyaGPT to your Discord server for group intelligence and data analysis.</p>
+            <div class="status-inactive">
+                <span
+                    style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                Inactive
+            </div>
+        </div>
+    </div>
+
+    <div data-include="/partials/footer.html"></div>
+</body>
+
+</html>
