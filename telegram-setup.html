@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.ico" />
+    <title>Telegram Setup - AgastyaGPT</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/auth.js"></script>
+    <style>
+        .setup-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .setup-step {
+            background: #020617;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            font-weight: 800;
+            color: rgba(56, 189, 248, 0.05);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .setup-step h3 {
+            color: #38bdf8;
+            margin-top: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setup-step p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .code-box {
+            background: #0f172a;
+            border: 1px dashed #38bdf8;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .code-text {
+            font-family: monospace;
+            font-size: 20px;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .copy-btn {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #38bdf8;
+            color: #020617;
+        }
+
+        .bot-link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: #0088cc;
+            /* Telegram Blue */
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .bot-link-btn:hover {
+            background: #0077b3;
+            transform: translateY(-2px);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            loadProfile();
+        });
+
+        async function loadProfile() {
+            const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+            const jwtToken = localStorage.getItem("id_token");
+
+            try {
+                // 1. Get Profile
+                const res = await fetch(`${API_BASE}/profile`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+
+                document.getElementById("email").innerText = data.email;
+
+                if (data.channels && data.channels.telegram && data.channels.telegram.status === 'Active') {
+                    showActiveStatus();
+                    return; // Don't need a code if already linked
+                }
+
+                // 2. Generate Linking Code
+                const codeRes = await fetch(`${API_BASE}/profile/telegram/code`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!codeRes.ok) throw new Error("HTTP " + codeRes.status);
+                const codeData = await codeRes.json();
+                document.getElementById("linking-code").innerText = codeData.code;
+
+            } catch (err) {
+                console.error("Setup error:", err);
+                document.getElementById("linking-code").innerText = "ERROR";
+            }
+        }
+
+        function showActiveStatus() {
+            const statusIndicator = document.getElementById("connection-status");
+            statusIndicator.className = "status-badge active";
+            statusIndicator.innerHTML = '<span style="width:8px; height:8px; background:#10b981; border-radius:50%;"></span> Connected';
+
+            // Hide setup steps and show delink section
+            document.getElementById("setup-steps").style.display = "none";
+            document.getElementById("delink-section").style.display = "block";
+        }
+
+        async function delinkTelegram() {
+            if (!confirm("Are you sure you want to disconnect your Telegram account? You will stop receiving updates.")) return;
+
+            const btn = document.getElementById("delink-btn");
+            btn.disabled = true;
+            btn.innerText = "Disconnecting...";
+
+            const API_BASE = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod";
+            const jwtToken = localStorage.getItem("id_token");
+
+            try {
+                const res = await fetch(`${API_BASE}/profile/telegram/delink`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!res.ok) throw new Error("HTTP " + res.status);
+
+                alert("Telegram account disconnected successfully.");
+                location.reload();
+
+            } catch (err) {
+                console.error("Delink error:", err);
+                alert("Failed to disconnect. Please try again.");
+                btn.disabled = false;
+                btn.innerText = "Disconnect Account";
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById("linking-code").innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector(".copy-btn");
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div data-include="/partials/loggedInNavbar.html"></div>
+    <script src="scripts/include.js?v=3"></script>
+    <script src="scripts/nav.js?v=2"></script>
+
+    <div style="padding: 16px 24px 0; font-size:14px; color:#64748b; display: flex; align-items: center; gap: 8px;">
+        <a href="dashboard.html" class="breadcrumb-link" style="color: #64748b; text-decoration: none;">Dashboard</a>
+        <span>/</span>
+        <a href="channels.html" class="breadcrumb-link" style="color: #64748b; text-decoration: none;">Channels</a>
+        <span>/</span>
+        <span style="color: #e2e8f0;">Telegram Setup</span>
+    </div>
+
+    <div style="padding: 8px 24px 0; font-size:14px; color:#64748b;">
+        Logged in as: <span id="email" style="color:#38bdf8;">Loading…</span>
+    </div>
+
+    <div class="setup-container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+            <div>
+                <h2 style="font-size: 32px; margin-bottom: 8px; color: #f8fafc;">Telegram <span>Setup</span></h2>
+                <p style="color: #94a3b8;">Link your Telegram account to AgastyaGPT in 3 easy steps.</p>
+            </div>
+            <div id="connection-status" class="status-badge pending">
+                <span style="width:8px; height:8px; background:#f59e0b; border-radius:50%;"></span> Not Connected
+            </div>
+        </div>
+
+        <div id="setup-steps">
+            <div class="setup-step" id="step-1">
+                <div class="step-number">01</div>
+                <h3>Open the Bot</h3>
+                <p>Click the button below to open `@AgastyaGPT_Bot` on Telegram. If you're on a desktop, it will open
+                    the
+                    Telegram app or web interface.</p>
+                <a href="https://t.me/openclaw_rhel_bot" target="_blank" class="bot-link-btn">
+                    <span>Open Telegram Bot</span>
+                </a>
+            </div>
+
+            <div class="setup-step" id="step-2">
+                <div class="step-number">02</div>
+                <h3>Send the Secret Code</h3>
+                <p>Once the bot is open, click <strong>"START"</strong> and send this unique linking code to verify your
+                    identity.</p>
+                <div class="code-box">
+                    <span id="linking-code" class="code-text">LOADING...</span>
+                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="setup-step" id="step-3">
+                <div class="step-number">03</div>
+                <h3 id="step-3-title">Verification</h3>
+                <p id="step-3-desc">The bot will confirm once the link is successful. You may need to refresh this page
+                    to
+                    see the updated status.</p>
+                <button class="btn btn-outline" style="width: 100%; text-align: center; border-radius: 10px;"
+                    onclick="location.reload()">Check Verification Status</button>
+            </div>
+        </div>
+
+        <!-- Delink Section (Hidden by default) -->
+        <div id="delink-section" style="display: none;">
+            <div class="setup-step" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                <h3 style="color: #ef4444;">Connected to Telegram</h3>
+                <p>Your account is currently linked. You can receive updates and interact with AgastyaGPT via Telegram.
+                </p>
+                <button id="delink-btn" class="btn btn-outline"
+                    style="width: 100%; text-align: center; border-color: #ef4444; color: #ef4444; border-radius: 10px;"
+                    onclick="delinkTelegram()">Disconnect Account</button>
+            </div>
+
+            <div style="text-align: center;">
+                <p style="color: #94a3b8; font-size: 14px;">Want to change your linked account? Disconnect first, then
+                    follow the setup instructions again.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; opacity: 0.6;">
+            <p style="font-size: 14px;">Trouble connecting? <a href="#" style="color: #38bdf8;">Contact Support</a></p>
+        </div>
+    </div>
+
+    <div data-include="/partials/footer.html"></div>
+</body>
+
+</html>
