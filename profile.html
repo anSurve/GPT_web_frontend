@@ -23,7 +23,7 @@
 
         // ── Fetch profile data ───────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async () => {
-            checkAuth();
+            if (!checkAuth()) return;
             const jwtToken = localStorage.getItem("id_token");
 
             try {
@@ -38,7 +38,11 @@
                 // Non-2xx (401, 403, 500…) → redirect to re-authenticate
                 if (!res.ok) {
                     console.error("Profile API error: HTTP", res.status);
-                    window.location.href = "callback.html";
+                    if (res.status === 401 || res.status === 403) {
+                        window.location.href = "callback.html";
+                        return;
+                    }
+                    window.location.href = "callback.html"; // Default fallback
                     return;
                 }
 

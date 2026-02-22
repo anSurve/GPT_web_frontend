@@ -10,7 +10,7 @@
     <script src="scripts/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const user = checkAuth();
+            if (!checkAuth()) return;
             const API_URL = "https://3x84juzs5i.execute-api.us-east-1.amazonaws.com/prod/profile";
             const jwtToken = localStorage.getItem("id_token");
 
@@ -22,7 +22,12 @@
                 }
             })
                 .then(res => {
-                    if (!res.ok) throw new Error("HTTP " + res.status);
+                    if (!res.ok) {
+                        if (res.status === 401 || res.status === 403) {
+                            window.location.href = "callback.html";
+                        }
+                        throw new Error("HTTP " + res.status);
+                    }
                     return res.json();
                 })
                 .then(data => {
@@ -32,6 +37,7 @@
                 })
                 .catch(err => {
                     console.error("API error:", err);
+                    window.location.href = "callback.html";
                 });
         });
 
@@ -48,9 +54,9 @@
     </div>
 
     <div class="features" style="padding-top: 12px;">
-        <div class="card">
-            <h3>App Integrations</h3>
-            <p>Integrate with your favorite apps.</p>
+        <div class="card" onclick="window.location.href='channels.html'" style="cursor: pointer;">
+            <h3>Communication Channels</h3>
+            <p>Interact with AgastyaGPT on your favorite platforms.</p>
         </div>
         <div class="card">
             <h3>Services</h3>

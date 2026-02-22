@@ -65,10 +65,10 @@
 
     const clientId = "1u4dbf3uu4s4fvnb4g7lo9o59";
     // const redirectUri = "https://www.agastyagpt.com/callback.html";
-    const redirectUri =
-      window.location.hostname === "localhost"
-        ? "http://localhost:5500/callback.html"
-        : "https://www.agastyagpt.com/callback.html";
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const redirectUri = isLocal
+      ? window.location.origin + "/callback.html"
+      : "https://www.agastyagpt.com/callback.html";
 
     document.addEventListener('htmlIncluded', () => {
       const loginBtn = document.getElementById("signuploginBtn");
